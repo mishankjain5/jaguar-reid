@@ -78,3 +78,51 @@ models, confirming that background reliance is a training-time problem
 that requires dedicated intervention.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/q23er6i8)
+
+## Experiment 4: K-Reciprocal Re-ranking
+
+**Research Question**: Can post-processing similarity scores using 
+k-reciprocal re-ranking improve re-identification performance without 
+any retraining?
+
+**Intervention**: Applied k-reciprocal re-ranking to the output 
+embeddings of the best model (Combined ArcFace+Triplet). No model 
+weights changed. Searched over k1 ∈ {10, 15, 20, 25} and 
+lambda ∈ {0.2, 0.3, 0.4, 0.5} on the validation set.
+
+**What is controlled**: Model weights, training data, embeddings — 
+all identical to Experiment 2. Only the similarity computation 
+at inference time changes.
+
+**Best Parameters**: k1=15, k2=6, lambda=0.5
+
+**Validation Results**:
+| Method | Val mAP |
+|---|---|
+| Baseline (cosine similarity) | 0.6828 |
+| K-reciprocal re-ranking | 0.6892 |
+| Improvement | +0.0064 |
+
+**Kaggle Results**:
+| Competition | Without Re-ranking | With Re-ranking | Delta |
+|---|---|---|---|
+| Jaguar Re-Identification Challenge | 0.742 | 0.778 | +0.036 |
+| [Round-2] Jaguar Re-Identification Challenge | 0.041 | 0.041 | 0.000 |
+
+**Analysis**: K-reciprocal re-ranking improved the Round 1 leaderboard 
+score by 0.036, which is a substantial gain for a zero-cost 
+post-processing step. The method works by replacing raw cosine 
+similarity with a Jaccard distance based on shared k-reciprocal 
+neighbors — two images are considered more similar if they mutually 
+appear in each other's nearest neighbor lists. This is more robust 
+than cosine similarity alone because it considers the local 
+neighborhood structure of the embedding space. The Round 2 score 
+was unaffected, confirming that the background reliance issue exists 
+at the feature level and cannot be corrected by re-ranking alone. 
+The validation improvement (+0.006) was smaller than the leaderboard 
+improvement (+0.036), suggesting the test set benefits more from 
+re-ranking than the validation set, possibly because the test set 
+has more diverse query-gallery pairs.
+
+**W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/nsxd6ham)
+**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp04-reranking)
