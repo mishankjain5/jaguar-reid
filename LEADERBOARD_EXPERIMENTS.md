@@ -126,3 +126,62 @@ has more diverse query-gallery pairs.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/nsxd6ham)
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp04-reranking)
+
+## Experiment 5: Hyperparameter Sweep (Bayesian Optimisation)
+
+**Research Question**: Can Bayesian hyperparameter optimisation find 
+a better configuration than the default settings used in Experiment 2?
+
+**Intervention**: Used W&B Bayesian sweep to search over 7 
+hyperparameters across 15 trials. Each trial trained for 20 epochs 
+on the same cached embeddings with the Combined ArcFace+Triplet loss. 
+Best config then retrained for 25 epochs.
+
+**Search Space**:
+| Parameter | Range |
+|---|---|
+| learning_rate | 1e-5 to 1e-3 (log uniform) |
+| arcface_margin | 0.3, 0.4, 0.5, 0.6 |
+| arcface_scale | 32, 48, 64 |
+| triplet_margin | 0.2, 0.3, 0.4 |
+| alpha | 0.3, 0.5, 0.7 |
+| embedding_dim | 128, 256, 512 |
+| dropout | 0.1, 0.3, 0.5 |
+
+**Best Configuration Found**:
+| Parameter | Default (Exp 2) | Sweep Best |
+|---|---|---|
+| learning_rate | 1e-4 | 7.67e-4 |
+| arcface_margin | 0.5 | 0.6 |
+| arcface_scale | 64 | 48 |
+| triplet_margin | 0.3 | 0.4 |
+| alpha | 0.5 | 0.3 |
+| embedding_dim | 256 | 256 |
+| dropout | 0.3 | 0.5 |
+
+**Results**:
+| Configuration | Val mAP |
+|---|---|
+| Default (Exp 2) | 0.7900 |
+| Sweep best | 0.8039 |
+| Improvement | +0.0139 |
+
+**Kaggle Results (sweep best + re-ranking)**:
+| Competition | Public mAP | Date |
+|---|---|---|
+| Jaguar Re-Identification Challenge | 0.783 | March 3, 2026 |
+| [Round-2] Jaguar Re-Identification Challenge | 0.040 | March 3, 2026 |
+
+**Analysis**: Bayesian optimisation found that a higher learning rate 
+(7.67e-4 vs 1e-4) combined with stronger dropout (0.5 vs 0.3) and 
+a lower alpha (0.3 vs 0.5) significantly improved performance. The 
+lower alpha means 30% ArcFace + 70% Triplet Loss works better than 
+50/50 — suggesting that direct distance optimisation is more important 
+than classification margin for this dataset. The higher arcface margin 
+(0.6) pushes class boundaries further apart, which helps with the 
+fine-grained nature of jaguar identification. Combined with re-ranking 
+from Experiment 4, this configuration achieves 0.783 on the public 
+leaderboard — our best result overall.
+
+**W&B Sweep**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/lcvs2mt6)
+**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp05-hyperparam-sweep)
