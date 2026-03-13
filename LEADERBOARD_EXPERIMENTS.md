@@ -30,6 +30,8 @@ The severe drop suggests the baseline model learned background
 shortcuts rather than jaguar coat patterns, and that training on 
 segmented images (Round 2) requires a dedicated model.
 
+**W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/q23er6i8)
+
 ## Experiment 2: Loss Function Comparison (6 Losses)
 
 **Research Question**: Which loss function produces the best 
@@ -79,7 +81,7 @@ remaining experiments. The Round 2 score (0.041) remains low for both
 models, confirming that background reliance is a training-time problem 
 that requires dedicated intervention.
 
-**W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/q23er6i8)
+**W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/g6xel2lf)
 
 ## Experiment 4: K-Reciprocal Re-ranking
 
