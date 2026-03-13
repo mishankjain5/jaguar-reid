@@ -107,3 +107,72 @@ future work on data augmentation for rare identities.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/gi4zwzzk)
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp06-deduplication)
+
+## Experiment 7: Near-Duplicate Detection Analysis
+
+**Research Question**: Does the training set contain near-duplicate 
+images, and do they leak across the train/val split, potentially 
+inflating validation mAP estimates?
+
+**Intervention**: Computed pairwise cosine similarity between all 
+1,895 MegaDescriptor embeddings. Identified near-duplicate pairs 
+at four similarity thresholds (0.95, 0.97, 0.98, 0.99). Analyzed 
+per-identity duplicate rates and cross-split contamination.
+
+**What is controlled**: Same train/val split as all experiments 
+(seed=42, 80/20 stratified). Raw MegaDescriptor embeddings used 
+(no fine-tuning) to detect visual similarity at the feature level.
+
+**Results at threshold 0.99:**
+| Metric | Value |
+|---|---|
+| Total near-duplicate pairs | 317 |
+| Same identity pairs | 317 (100%) |
+| Cross identity pairs | 0 (0%) |
+| Cross-split pairs (train/val leak) | 86 (27%) |
+
+**Threshold sensitivity:**
+| Threshold | Total Pairs | Same Identity | Cross Identity | Cross Split |
+|---|---|---|---|---|
+| 0.99 | 317 | 317 | 0 | 86 |
+| 0.98 | 755 | 754 | 1 | 223 |
+| 0.97 | 1,225 | 1,188 | 37 | 397 |
+| 0.95 | 1,993 | 1,901 | 92 | 661 |
+
+**Most affected identities (threshold=0.99):**
+| Identity | Total Images | Duplicate Pairs | Cross-Split Pairs | Duplicate Rate |
+|---|---|---|---|---|
+| Tomas | 63 | 163 | 32 | 2.59 |
+| Kamaikua | 105 | 35 | 12 | 0.33 |
+| Benita | 86 | 26 | 11 | 0.30 |
+| Medrosa | 170 | 19 | 5 | 0.11 |
+| Lua | 120 | 14 | 5 | 0.12 |
+
+**Analysis**: The dataset contains 317 near-duplicate pairs at the 
+0.99 similarity threshold. All pairs belong to the same identity — 
+there are no cross-identity near-duplicates, confirming the labels 
+are clean. The duplicates are primarily consecutive video frames 
+from camera trap sequences, as evidenced by Tomas having 163 
+duplicate pairs from 63 images (2.59x duplication rate) and the 
+visual inspection showing nearly identical frames.
+
+The critical finding is that 86 pairs (27% of all duplicate pairs) 
+cross the train/val split boundary. This means some validation 
+images are near-identical to training images, which likely inflates 
+validation mAP estimates. Models that memorize specific frames 
+will appear to generalize better than they actually do. This 
+partially explains the consistent gap between validation mAP 
+and public leaderboard scores observed across all experiments.
+
+At the looser 0.95 threshold, 92 cross-identity pairs appear, 
+suggesting some jaguars are genuinely visually similar at a 
+coarse level — further motivating the use of fine-grained 
+identity-specific features.
+
+**Implication for future work**: Deduplication before splitting 
+(grouping near-duplicate frames into clusters and splitting 
+at cluster level) would produce a cleaner train/val split and 
+more reliable validation mAP estimates.
+
+**W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/2zy5g79m)
+**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp07-near-duplicate-analysis)
