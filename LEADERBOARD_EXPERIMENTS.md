@@ -1,5 +1,7 @@
 # Leaderboard Experiments
 
+## Experiment 1: Forked Baseline Diagnostic
+
 **Research Question**: How much does background context contribute
 to the baseline model's re-identification performance at inference time?
 
