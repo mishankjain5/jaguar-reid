@@ -25,10 +25,10 @@ scheduler (ReduceLROnPlateau), batch size, val split, random seed.
 | Focal Loss | 0.4177 | 0.5060 |
 
 **Kaggle Submissions (best model — Combined ArcFace + Triplet)**:
-| Competition | Public mAP | Date |
-|---|---|---|
-| Jaguar Re-Identification Challenge | 0.742 | March 2, 2026 |
-| [Round-2] Jaguar Re-Identification Challenge | 0.041 | March 2, 2026 |
+| Competition | Submission File | Public mAP | Date |
+|---|---|---|---|
+| Jaguar Re-Identification Challenge | submission_combined_loss.csv | 0.742 | March 2, 2026 |
+| [Round-2] Jaguar Re-Identification Challenge | submission_combined_loss.csv | 0.041 | March 2, 2026 |
 
 **Analysis**: The Combined ArcFace + Triplet loss achieved the best 
 validation mAP (0.790), outperforming plain ArcFace (0.785). This 
@@ -50,6 +50,7 @@ models, confirming that background reliance is a training-time problem
 that requires dedicated intervention.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/g6xel2lf)
+**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp02-loss-comparison)
 
 ## Experiment 4: K-Reciprocal Re-ranking
 
@@ -76,10 +77,10 @@ at inference time changes.
 | Improvement | +0.0064 |
 
 **Kaggle Results**:
-| Competition | Without Re-ranking | With Re-ranking | Delta |
-|---|---|---|---|
-| Jaguar Re-Identification Challenge | 0.742 | 0.778 | +0.036 |
-| [Round-2] Jaguar Re-Identification Challenge | 0.041 | 0.041 | 0.000 |
+| Competition | Submission File | Without Re-ranking | With Re-ranking | Delta |
+|---|---|---|---|---|
+| Jaguar Re-Identification Challenge | submission_reranked.csv | 0.742 | 0.778 | +0.036 |
+| [Round-2] Jaguar Re-Identification Challenge | submission_reranked.csv | 0.041 | 0.041 | 0.000 |
 
 **Analysis**: K-reciprocal re-ranking improved the Round 1 leaderboard 
 score by 0.036, which is a substantial gain for a zero-cost 
@@ -139,10 +140,10 @@ Best config then retrained for 25 epochs.
 | Improvement | +0.0139 |
 
 **Kaggle Results (sweep best + re-ranking)**:
-| Competition | Public mAP | Date |
-|---|---|---|
-| Jaguar Re-Identification Challenge | 0.783 | March 3, 2026 |
-| [Round-2] Jaguar Re-Identification Challenge | 0.040 | March 3, 2026 |
+| Competition | Submission File | Public mAP | Date |
+|---|---|---|---|
+| Jaguar Re-Identification Challenge | submission_sweep_reranked.csv | 0.783 | March 3, 2026 |
+| [Round-2] Jaguar Re-Identification Challenge | submission_sweep_reranked.csv | 0.040 | March 3, 2026 |
 
 **Analysis**: Bayesian optimisation found that a higher learning rate 
 (7.67e-4 vs 1e-4) combined with stronger dropout (0.5 vs 0.3) and 
