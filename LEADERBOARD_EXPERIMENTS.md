@@ -7,7 +7,7 @@ identity-balanced mAP for jaguar re-identification under identical
 training conditions?
 
 **Intervention**: Trained 6 different loss functions keeping everything 
-else fixed — same MegaDescriptor backbone, same embedding dim (256), 
+else fixed, same MegaDescriptor backbone, same embedding dim (256), 
 same learning rate (1e-4), same batch size (32), same 25 epochs, 
 same val split (seed=42).
 
@@ -33,7 +33,7 @@ scheduler (ReduceLROnPlateau), batch size, val split, random seed.
 **Analysis**: The Combined ArcFace + Triplet loss achieved the best 
 validation mAP (0.790), outperforming plain ArcFace (0.785). This 
 suggests that combining a classification-based margin loss with a 
-distance-based triplet loss is beneficial — ArcFace pushes embeddings 
+distance-based triplet loss is beneficial, ArcFace pushes embeddings 
 toward class centers while Triplet Loss directly optimises pairwise 
 distances, and together they provide complementary learning signals. 
 CosFace performed comparably to ArcFace, confirming that margin-based 
@@ -46,10 +46,11 @@ re-identification. SubCenter ArcFace underperformed unexpectedly (0.610),
 possibly because 25 epochs was insufficient for its K=3 sub-centers to 
 converge. The Combined loss will be used as the foundation for all 
 remaining experiments. The Round 2 score (0.041) remains low for both 
-models, confirming that background reliance is a training-time problem 
+models, confirming that background reliance is a training time problem 
 that requires dedicated intervention.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/g6xel2lf)
+
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp02-loss-comparison)
 
 ## Experiment 4: K-Reciprocal Re-ranking
@@ -63,7 +64,7 @@ embeddings of the best model (Combined ArcFace+Triplet). No model
 weights changed. Searched over k1 ∈ {10, 15, 20, 25} and 
 lambda ∈ {0.2, 0.3, 0.4, 0.5} on the validation set.
 
-**What is controlled**: Model weights, training data, embeddings — 
+**What is controlled**: Model weights, training data, embeddings; 
 all identical to Experiment 2. Only the similarity computation 
 at inference time changes.
 
@@ -83,10 +84,10 @@ at inference time changes.
 | [Round-2] Jaguar Re-Identification Challenge | submission_reranked.csv | 0.041 | 0.041 | 0.000 |
 
 **Analysis**: K-reciprocal re-ranking improved the Round 1 leaderboard 
-score by 0.036, which is a substantial gain for a zero-cost 
+score by 0.036, which is a substantial gain for a zero cost 
 post-processing step. The method works by replacing raw cosine 
 similarity with a Jaccard distance based on shared k-reciprocal 
-neighbors — two images are considered more similar if they mutually 
+neighbors. Two images are considered more similar if they mutually 
 appear in each other's nearest neighbor lists. This is more robust 
 than cosine similarity alone because it considers the local 
 neighborhood structure of the embedding space. The Round 2 score 
@@ -95,9 +96,10 @@ at the feature level and cannot be corrected by re-ranking alone.
 The validation improvement (+0.006) was smaller than the leaderboard 
 improvement (+0.036), suggesting the test set benefits more from 
 re-ranking than the validation set, possibly because the test set 
-has more diverse query-gallery pairs.
+has more diverse query gallery pairs.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/nsxd6ham)
+
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp04-reranking)
 
 ## Experiment 5: Hyperparameter Sweep (Bayesian Optimisation)
@@ -149,12 +151,63 @@ Best config then retrained for 25 epochs.
 (7.67e-4 vs 1e-4) combined with stronger dropout (0.5 vs 0.3) and 
 a lower alpha (0.3 vs 0.5) significantly improved performance. The 
 lower alpha means 30% ArcFace + 70% Triplet Loss works better than 
-50/50 — suggesting that direct distance optimisation is more important 
+50/50, suggesting that direct distance optimisation is more important 
 than classification margin for this dataset. The higher arcface margin 
 (0.6) pushes class boundaries further apart, which helps with the 
-fine-grained nature of jaguar identification. Combined with re-ranking 
+fine grained nature of jaguar identification. Combined with re-ranking 
 from Experiment 4, this configuration achieves 0.783 on the public 
-leaderboard — our best result overall.
+leaderboard - our best result overall.
 
 **W&B Sweep**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/lcvs2mt6)
+
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp05-hyperparam-sweep)
+
+## Experiment 8: Data Augmentation Comparison
+
+**Research Question**: Does adding data augmentation during training 
+improve re-identification performance, and is there an optimal 
+augmentation strength?
+
+**Intervention**: Trained three identical models with different 
+augmentation strategies applied to training images only. Validation 
+images were never augmented. All other settings use the best config 
+from Experiment 5.
+
+**What is controlled**: Backbone, loss function (Combined 
+ArcFace+Triplet), optimizer (AdamW, lr=7.67e-4), embedding dim (256), 
+dropout (0.5), batch size (32), 25 epochs, seed=42, val split.
+
+**Augmentation Strategies**:
+| Strategy | Transforms Applied |
+|---|---|
+| None (control) | Resize + Normalize only |
+| Light | + Random horizontal flip + Mild color jitter (b=0.2, c=0.2, s=0.1, h=0.05) |
+| Heavy | + Random rotation (15°) + Strong color jitter (b=0.4, c=0.4) + Random grayscale (p=0.1) + Random erasing (p=0.3) |
+
+**Results**:
+| Augmentation | Val mAP | Val Loss | vs Control |
+|---|---|---|---|
+| None (control) | 0.8062 | 1.1814 | baseline |
+| Light | 0.8188 | 1.1957 | +0.0126 |
+| Heavy | 0.7659 | 1.4703 | -0.0403 |
+
+**Analysis**: Light augmentation improved validation mAP by +0.013 
+over no augmentation, confirming that mild geometric and color 
+variations help the model generalise better. However, heavy 
+augmentation significantly hurt performance (-0.040), a well-known 
+phenomenon in metric learning, excessive augmentation distorts 
+the embedding space by making the same identity look too different, 
+confusing the triplet and ArcFace loss signals. Random erasing in 
+particular may remove distinctive jaguar coat pattern regions that 
+the model relies on for identity discrimination. The optimal 
+augmentation strategy for this dataset is light augmentation, 
+which introduces enough variation to improve generalisation without 
+corrupting identity-discriminative features.
+
+**W&B Runs**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/qo7lj14r)
+
+(https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/z6ckjj9e)
+
+(https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/gc1bvhux)
+
+**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp08-data-augmentation)
