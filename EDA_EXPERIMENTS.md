@@ -141,7 +141,7 @@ future work on data augmentation for rare identities.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/gi4zwzzk)
 
-**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp06-deduplication)
+**Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp06-embedding-analysis)
 
 ## Experiment 7: Near-Duplicate Detection Analysis
 
