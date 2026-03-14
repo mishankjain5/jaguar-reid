@@ -14,7 +14,7 @@ This repository contains all experiments, notebooks, and documentation for the J
 
 **Best Result:** 0.783 mAP on public leaderboard (+5.7% over baseline)  
 **Baseline:** MegaDescriptor + ArcFace = 0.741 mAP  
-**Total Experiment:** 7 distinct experiments + 1 forked baseline
+**Total Experiment:** 8 distinct experiments (including forked baseline)
 
 ---
 
@@ -69,7 +69,7 @@ jaguar-reid/
 | 2 | Loss function comparison (6 losses) | 0.790 | 0.742 | 0.041 |
 | 4 | K-reciprocal re-ranking | 0.689 | 0.778 | 0.041 |
 | 5 | Bayesian hyperparameter sweep | 0.804 | 0.783 | 0.040 |
-| 8 | Bayesian hyperparameter sweep | 0.804 | 0.783 | 0.040 |
+| 8 | Data augmentation comparison | 0.819 | N/A | N/A |
 
 ---
 
@@ -155,6 +155,14 @@ All experiments run on **Kaggle** using free GPU compute. To reproduce:
 | 0.99 | 317 | 317 (100%) | 86 (27%) |
 | 0.95 | 1,993 | 1,901 (95%) | 661 (33%) |
 
+### Data Augmentation Comparison (Exp 8)
+ 
+| Augmentation | Val mAP | vs Control |
+|---|---|---|
+| None (control) | 0.806 | baseline |
+| Light (flip + mild jitter) | **0.819** | +0.013 |
+| Heavy (rotation + strong jitter + erasing) | 0.766 | −0.040 |
+
 ---
 
 ## W&B Tracking
@@ -170,6 +178,7 @@ All experiments tracked at:
 | sweep (15 trials) + sweep-best-final-training | Exp 5: Hyperparameter sweep |
 | exp06-embedding-analysis | Exp 6: Embedding analysis |
 | exp07-near-duplicate-analysis | Exp 7: Near-duplicate detection |
+| aug-none-control, aug-light, aug-heavy | Exp 8: Data augmentation |
 
 ---
 
