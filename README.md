@@ -14,7 +14,7 @@ This repository contains all experiments, notebooks, and documentation for the J
 
 **Best Result:** 0.783 mAP on public leaderboard (+5.7% over baseline)  
 **Baseline:** MegaDescriptor + ArcFace = 0.741 mAP  
-**Total Experiment:** 6 distinct experiments + 1 forked baseline
+**Total Experiment:** 7 distinct experiments + 1 forked baseline
 
 ---
 
@@ -45,7 +45,8 @@ jaguar-reid/
 ├── jaguar-reid-exp04-reranking.ipynb
 ├── jaguar-reid-exp05-hyperparam-sweep.ipynb
 ├── jaguar-reid-exp06-embedding-analysis.ipynb
-└── jaguar-reid-exp07-near-duplicate-analysis.ipynb
+├── jaguar-reid-exp07-near-duplicate-analysis.ipynb
+└── jaguar-reid-exp08-data-augmentation.ipynb
 ```
 
 ---
@@ -68,6 +69,7 @@ jaguar-reid/
 | 2 | Loss function comparison (6 losses) | 0.790 | 0.742 | 0.041 |
 | 4 | K-reciprocal re-ranking | 0.689 | 0.778 | 0.041 |
 | 5 | Bayesian hyperparameter sweep | 0.804 | 0.783 | 0.040 |
+| 8 | Bayesian hyperparameter sweep | 0.804 | 0.783 | 0.040 |
 
 ---
 
