@@ -8,7 +8,7 @@ to the baseline model's re-identification performance at inference time?
 **Intervention**: Submitted identical baseline model (MegaDescriptor +
 ArcFace, no modifications) to both Round 1 (background intact) and
 Round 2 (background removed from test images). Zero change to model
-weights or training — only the test set differs between rounds.
+weights or training only the test set differs between rounds.
 
 **What is controlled**: Model weights, training data, hyperparameters,
 submission file — all identical. Only the test images differ.
@@ -22,10 +22,10 @@ submission file — all identical. Only the test images differ.
 **mAP Delta**: 0.692 drop when background is removed
 
 **Analysis**: Jaguar Re-Identification challenge and Round 2 differ in both training and test 
-images — Round 2 has backgrounds removed from everything using SAM3 
+images. Round 2 has backgrounds removed from everything using SAM3 
 segmentation. Submitting the Round 1 baseline model to Round 2 
 (0.043) therefore measures how well features learned from 
-background-heavy images transfer to segmented jaguar-only images. 
+background heavy images transfer to segmented jaguar only images. 
 The severe drop suggests the baseline model learned background 
 shortcuts rather than jaguar coat patterns, and that training on 
 segmented images (Round 2) requires a dedicated model.
@@ -39,7 +39,7 @@ force the model to learn jaguar-specific identity features,
 improving re-identification performance?
 
 **Intervention**: Trained two identical models using Combined 
-ArcFace+Triplet loss — one on original images with backgrounds 
+ArcFace+Triplet loss: one on original images with backgrounds 
 (Round 1 training data), one on SAM3 background-removed images 
 (Round 2 training data). Everything else fixed: same backbone, 
 same embedding dim, same optimizer, same seed.
@@ -67,8 +67,8 @@ training hurt performance by 0.048 mAP. Two explanations are likely.
 First, the SAM3 segmentation used in Round 2 introduces artifacts 
 around jaguar edges, adding noise that makes it harder for 
 MegaDescriptor to extract clean features. Second, background context 
-may actually carry useful identity information in this dataset — 
-individual jaguars may consistently appear in the same habitat zones, 
+may actually carry useful identity information in this dataset.
+Individual jaguars may consistently appear in the same habitat zones, 
 making location a weak but real signal. The persistent low Round 2 
 score (0.041) confirms that the model trained on background-present 
 images cannot generalise to background-removed test images, regardless 
@@ -125,21 +125,22 @@ cohesion and inter-class separation across all 31 identities.
 | Apeiara | 20 | 0.788 |
 
 **Analysis**: Fine-tuning dramatically improves embedding quality. 
-Before fine-tuning, raw MegaDescriptor embeddings fail completely — 
+Before fine-tuning, raw MegaDescriptor embeddings fail completely.
 0/5 correct neighbors for all query jaguars, with inter-class 
 similarity (0.153) dangerously close to intra-class similarity (0.310). 
 After fine-tuning, the separation jumps from 0.157 to 0.930 (+0.774), 
-meaning same-jaguar images are now very tightly clustered while 
-different-jaguar images are pushed to negative similarity scores. 
+meaning same jaguar images are now very tightly clustered while 
+different jaguar images are pushed to negative similarity scores. 
 
 The hardest identities (Ipepo, Patricia, Bernard) all have fewer than 
 20 images, confirming that data scarcity is the primary challenge. 
 The identity-balanced mAP metric is therefore well-chosen for this 
-dataset — without it, rare jaguars would be ignored during optimization. 
+dataset, without it, rare jaguars would be ignored during optimization. 
 The class imbalance (14x between most and least common) motivates 
 future work on data augmentation for rare identities.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/gi4zwzzk)
+
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp06-deduplication)
 
 ## Experiment 7: Near-Duplicate Detection Analysis
@@ -183,8 +184,8 @@ per-identity duplicate rates and cross-split contamination.
 | Lua | 120 | 14 | 5 | 0.12 |
 
 **Analysis**: The dataset contains 317 near-duplicate pairs at the 
-0.99 similarity threshold. All pairs belong to the same identity — 
-there are no cross-identity near-duplicates, confirming the labels 
+0.99 similarity threshold. All pairs belong to the same identity.
+There are no cross-identity near-duplicates, confirming the labels 
 are clean. The duplicates are primarily consecutive video frames 
 from camera trap sequences, as evidenced by Tomas having 163 
 duplicate pairs from 63 images (2.59x duplication rate) and the 
@@ -200,7 +201,7 @@ and public leaderboard scores observed across all experiments.
 
 At the looser 0.95 threshold, 92 cross-identity pairs appear, 
 suggesting some jaguars are genuinely visually similar at a 
-coarse level — further motivating the use of fine-grained 
+coarse level, further motivating the use of fine-grained 
 identity-specific features.
 
 **Implication for future work**: Deduplication before splitting 
@@ -209,4 +210,5 @@ at cluster level) would produce a cleaner train/val split and
 more reliable validation mAP estimates.
 
 **W&B Run**: (https://wandb.ai/jain5-university-of-potsdam/jaguar-reid-mishank/runs/2zy5g79m)
+
 **Notebook**: (https://www.kaggle.com/code/mishankjain/jaguar-reid-exp07-near-duplicate-analysis)
